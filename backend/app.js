@@ -9,6 +9,9 @@ const cors = require("cors");
 const axios = require("axios");
 require('dotenv').config();
 
+
+const { isAuthenticated, hasRole } = require('./middlewares/authMiddleware');
+
 const User = require('./models/User');
 const authRoutes = require('./routes/authRoutes');
 const donorRoutes = require("./routes/donors");
@@ -83,10 +86,10 @@ passport.deserializeUser(async (id, done) => {
 
 // ✅ FIX 4: Route Fixes
 app.use("/api/auth", authRoutes);
-app.use("/api/donors", donorRoutes);
-app.use("/api/ngos", ngoRoutes);
-app.use("/api/volunteers", volunteerRoutes);
-app.use('/donations', donationRoutes);
+app.use("/api/donors", isAuthenticated, hasRole(['donor']), donorRoutes);
+app.use("/api/ngos", isAuthenticated, hasRole(['ngo', 'admin']), ngoRoutes);
+app.use("/api/volunteers", isAuthenticated, hasRole(['volunteer', 'admin']), volunteerRoutes);
+app.use('/donations', isAuthenticated, hasRole(['donor']), donationRoutes);
 app.use('/', recommendationRoutes);
 
 // ✅ FIX 5: API Check

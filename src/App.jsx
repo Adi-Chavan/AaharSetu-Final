@@ -18,21 +18,22 @@ import { NGORegister } from "./pages/ngo/register"
 import { Recommend } from "./pages/ml";
 
 
-
 // 🔐 Protected Route Wrapper
+
 const ProtectedRoute = ({ element, allowedRoles }) => {
-  const { user } = useAuth(); // ✅ Ensure `useAuth()` is used correctly
+  const { user } = useAuth();
 
   if (!user) {
-    return <Navigate to="/sign-in" replace />; // Redirect if not logged in
+    return <Navigate to="/sign-in" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />; // Redirect if the user lacks permission
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return element;
 };
+
 
 function App() {
   return (

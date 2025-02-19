@@ -9,7 +9,7 @@ export function SignIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth(); // ✅ Use context
+  const { user, login } = useAuth(); // ✅ Use context
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,31 +18,71 @@ export function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+  
     try {
       const response = await loginUser(formData);
       console.log("Login Response:", response);
-
+  
       if (!response || !response.user) {
         setError(response.message || "Invalid credentials");
         return;
       }
-
-      login(response.user); // ✅ Update global auth state
-
-      // Redirect based on role
-      const role = response.user.role?.toLowerCase();
-      console.log("User Role:", role);
-
+  
+      // 🔥 Fetch the latest session data to ensure the role is correct
+      const sessionResponse = await fetch("http://localhost:5000/api/auth/me", { credentials: "include" });
+      const sessionData = await sessionResponse.json();
+  
+      if (!sessionData.user) {
+        setError("Failed to verify session. Please try again.");
+        return;
+      }
+  
+      login(sessionData.user); // ✅ Update global auth state with verified backend data
+  
+      // Redirect based on the verified role from backend
+      const role = sessionData.user.role?.toLowerCase();
+      console.log("Verified User Role:", role);
+  
       if (role === "donor") navigate("/donor-dashboard");
       else if (role === "ngo") navigate("/ngo-dashboard");
       else if (role === "volunteer") navigate("/volunteer-dashboard");
-      else if (role === "admin") navigate("/admin-dashboard");   //adding new feature
+      else if (role === "admin") navigate("/admin-dashboard");
       else navigate("/dashboard");
     } catch (err) {
+      console.error("Login error:", err);
       setError("Something went wrong. Please try again.");
     }
   };
+  
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError(null);
+
+  //   try {
+  //     const response = await loginUser(formData);
+  //     console.log("Login Response:", response);
+
+  //     if (!response || !response.user) {
+  //       setError(response.message || "Invalid credentials");
+  //       return;
+  //     }
+
+  //     login(response.user); // ✅ Update global auth state
+
+  //     // Redirect based on role
+  //     const role = response.user.role?.toLowerCase();
+  //     console.log("User Role:", role);
+
+  //     if (role === "donor") navigate("/donor-dashboard");
+  //     else if (role === "ngo") navigate("/ngo-dashboard");
+  //     else if (role === "volunteer") navigate("/volunteer-dashboard");
+  //     else if (role === "admin") navigate("/admin-dashboard");   //adding new feature
+  //     else navigate("/dashboard");
+  //   } catch (err) {
+  //     setError("Something went wrong. Please try again.");
+  //   }
+  // };
 
   return (
     <div className="min-h-screen pt-20 px-4">

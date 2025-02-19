@@ -1,3 +1,5 @@
+// 
+
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -7,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useStore } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 import { Camera } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext'; // ✅ Import authentication hook
 
 const markerIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -17,6 +20,18 @@ const markerIcon = new L.Icon({
 export function DonateForm() {
   const navigate = useNavigate();
   const addDonation = useStore((state) => state.addDonation);
+  const { user } = useAuth(); // ✅ Get user authentication state
+
+  // ✅ Redirect if the user is not authenticated or not a donor
+  useEffect(() => {
+    if (!user) {
+      navigate('/sign-in'); // Redirect to login if not authenticated
+    } else if (user.role !== 'donor') {
+      alert('You do not have permission to access this page.');
+      navigate('/'); // Redirect unauthorized users
+    }
+  }, [user, navigate]);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -79,7 +94,10 @@ export function DonateForm() {
     try {
       const response = await fetch('http://localhost:5000/donations/add', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // ✅ Ensure authentication credentials are sent
         body: JSON.stringify(formData),
       });
 
@@ -96,6 +114,10 @@ export function DonateForm() {
       alert('There was an error submitting your donation. Please try again.');
     }
   };
+
+  // ✅ Prevent rendering the form until the authentication check is done
+  if (!user || user.role !== 'donor') return null;
+
 
   return (
     <div className="min-h-screen pt-20 px-4">
