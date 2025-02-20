@@ -7,7 +7,11 @@ import { useAuth } from "@/context/AuthContext"; // ✅ Ensure correct import pa
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const location = useLocation();
-  const { user, setUser } = useAuth(); // ✅ Ensure user is correctly fetched
+  const { user, setUser, loading } = useAuth(); // ✅ Ensure user is correctly fetched
+
+
+  // ✅ Show loading until session is verified
+  if (loading) return <p className="text-center py-4">Loading...</p>;
 
   // 🔴 Debugging - Remove after testing
   console.log("Current User:", user);

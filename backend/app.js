@@ -52,13 +52,18 @@ app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"], crede
 app.use(session({ 
     secret: process.env.SESSION_SECRET || 'defaultSecret', 
     resave: false, 
-    saveUninitialized: false 
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false,  // ❌ Set `true` in production if using HTTPS
+        sameSite: "lax",  // ✅ Helps with cross-origin session issues
+        maxAge: 1000 * 60 * 60 * 24 * 7, // ✅ 7-day session persistence
+    }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// ✅ FIX 3: Passport Authentication Fixes
 passport.use(new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
@@ -74,15 +79,40 @@ passport.use(new LocalStrategy(
     }
 ));
 
-passport.serializeUser((user, done) => done(null, user.id));
+
+// ✅ FIX 3: Passport Authentication Fixes
+passport.serializeUser((user, done) => {
+    console.log("Serializing User:", user); // ✅ Debug
+    done(null, user._id);
+});
+
 passport.deserializeUser(async (id, done) => {
     try {
+        console.log("Deserializing User ID:", id); // ✅ Debug
         const user = await User.findById(id);
+        console.log("Deserialized User:", user); // ✅ Debug
         done(null, user);
     } catch (error) {
         done(error);
     }
 });
+
+// passport.serializeUser((user, done) => done(null, user.id));
+// passport.deserializeUser(async (id, done) => {
+//     try {
+//         const user = await User.findById(id);
+//         done(null, user);
+//     } catch (error) {
+//         done(error);
+//     }
+// });
+
+app.use((req, res, next) => {
+    console.log("Session Data:", req.session); // ✅ Log session data
+    console.log("User from Session:", req.user); // ✅ Log user data
+    next();
+});
+
 
 // ✅ FIX 4: Route Fixes
 app.use("/api/auth", authRoutes);
