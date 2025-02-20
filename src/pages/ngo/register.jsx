@@ -147,7 +147,8 @@ export function NGORegister() {
 
   return (
     <div className="min-h-screen pt-20 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto relative">
+      <div className="gradient" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl">
           <h1 className="text-2xl font-bold mb-6">NGO Registration</h1>
           {Object.keys(errors).length > 0 && (

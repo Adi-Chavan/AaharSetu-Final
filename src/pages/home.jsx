@@ -1,12 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart, Users, Utensils } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function HomePage() {
+  useEffect(() => {
+    const initLandbot = () => {
+      if (!window.myLandbot) {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.async = true;
+        script.src = "https://cdn.landbot.io/landbot-3/landbot-3.0.0.mjs";
+
+        script.addEventListener("load", () => {
+          window.myLandbot = new window.Landbot.Livechat({
+            configUrl: "https://storage.googleapis.com/landbot.online/v3/H-2787110-EFXHOM3SAHZ14HLK/index.json",
+          });
+        });
+
+        document.body.appendChild(script);
+      }
+    };
+
+    window.addEventListener("mouseover", initLandbot, { once: true });
+    window.addEventListener("touchstart", initLandbot, { once: true });
+
+    return () => {
+      window.removeEventListener("mouseover", initLandbot);
+      window.removeEventListener("touchstart", initLandbot);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="relative pt-20 lg:pt-24">
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50 -z-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
@@ -23,13 +50,12 @@ export function HomePage() {
               food redistribution platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="group">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button size="lg" variant="outline">
-                Learn More
-              </Button>
+              <Link to='/sign-in'>
+                <Button size="lg" className="group">
+                  Donate Now
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

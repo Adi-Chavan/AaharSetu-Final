@@ -116,8 +116,9 @@ export function Leaderboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <Trophy className="w-6 h-6 text-yellow-500" />
@@ -174,8 +175,9 @@ export function Leaderboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <Package className="w-6 h-6 text-blue-500" />

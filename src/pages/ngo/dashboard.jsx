@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Clock, CheckCircle2, X, Plus, Package } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { Link } from 'react-router-dom';
+
 
 export function NgoDashboard() {
   const donations = useStore((state) => state.donations) ?? [];
@@ -93,10 +95,19 @@ export function NgoDashboard() {
             <h1 className="text-3xl font-bold">NGO Dashboard</h1>
             <p className="text-neutral-600">Review donations and manage requests</p>
           </div>
-          <Button onClick={() => setShowRequestForm(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Request Donation
-          </Button>
+
+          <div className='flex space-x-4'>
+            <Link to="/ml">
+              <Button>
+                  ML Recommendations 
+              </Button>
+            </Link>
+
+            <Button onClick={() => setShowRequestForm(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Request Donation
+            </Button>
+          </div>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -104,8 +115,9 @@ export function NgoDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">Available Donations</h2>
             {pendingDonations.length > 0 ? (
               <div className="space-y-4">
@@ -147,8 +159,9 @@ export function NgoDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">Approved Donations</h2>
             {approvedDonations.length > 0 ? (
               <div className="space-y-4">
@@ -191,8 +204,9 @@ export function NgoDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">My Requests</h2>
             {myRequests.length > 0 ? (
               <div className="space-y-4">
@@ -350,7 +364,7 @@ export function NgoDashboard() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Dietary Requirements</label>
                   <div className="space-y-2">
-                    {['Vegetarian', 'Non Vegiterian'].map((type) => (
+                    {['Vegetarian', 'Non Vegeterian'].map((type) => (
                       <label key={type} className="flex items-center space-x-2">
                         <input
                           type="checkbox"

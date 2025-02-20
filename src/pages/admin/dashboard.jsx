@@ -21,8 +21,9 @@ export function AdminPanel() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">Users</h2>
             <p className="text-4xl font-bold">0</p>
             <p className="text-neutral-600">Total Users</p>
@@ -32,8 +33,9 @@ export function AdminPanel() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">Donations</h2>
             <p className="text-4xl font-bold">{donations.length}</p>
             <p className="text-neutral-600">Active Donations</p>
@@ -43,8 +45,9 @@ export function AdminPanel() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="glass-card p-6 rounded-2xl"
+            className="glass-card p-6 rounded-2xl relative"
           >
+            <div className='gradient'/>
             <h2 className="text-xl font-semibold mb-4">Deliveries</h2>
             <p className="text-4xl font-bold">{donations.filter(d => d.status === 'completed').length}</p>
             <p className="text-neutral-600">Completed Deliveries</p>
@@ -54,8 +57,9 @@ export function AdminPanel() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6 rounded-2xl"
+          className="glass-card p-6 rounded-2xl relative"
         >
+          <div className='gradient'/>
           <h2 className="text-xl font-semibold mb-4">Recent Donations</h2>
           <div className="overflow-x-auto">
             <table className="w-full">

@@ -13,9 +13,9 @@ import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
 import { AdminPanel } from "./pages/admin/dashboard";     
 import { Leaderboard } from "./pages/volunteer/leaderboard";
-import { DonorPanel } from "./pages/DonorPanel";     //added donar panel to navbar
 import { NGORegister } from "./pages/ngo/register"
 import { Recommend } from "./pages/ml";
+import { CertificateGenerator } from './components/layout/CertificateGenerator'
 
 
 
@@ -36,7 +36,7 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
 
 function App() {
   return (
-    <AuthProvider> {/* ✅ Wrap the entire app with AuthProvider */}
+    <AuthProvider> 
       <Router>
         <div className="min-h-screen bg-neutral-50">
           <Navbar />
@@ -49,13 +49,14 @@ function App() {
 
             {/* 🎗 Donor Routes */}
             <Route path="/donor-dashboard" element={<ProtectedRoute element={<DonorDashboard />} allowedRoles={["donor"]} />} />
-            <Route path="/donor/donate" element={<ProtectedRoute element={<DonateForm />} allowedRoles={["donor"]} />} />
-            <Route path="/donor/dash" element={<ProtectedRoute element={<DonorPanel />} allowedRoles={["donor"]} />} />    
-           
+            <Route path="/donor/donate" element={<ProtectedRoute element={<DonateForm />} allowedRoles={["donor"]} />} />           
+            <Route path="/generate-certificate" element={<ProtectedRoute element={<CertificateGenerator />} allowedRoles={["donor"]} />} />           
 
             {/* 🏥 NGO Routes */}
             <Route path="/ngo-dashboard" element={<ProtectedRoute element={<NgoDashboard />} allowedRoles={["ngo"]} />} />
             <Route path="/ngo/register" element={<ProtectedRoute element={<NGORegister />} allowedRoles={["ngo"]} /> } /> 
+            <Route path="/ml" element={<ProtectedRoute element={<Recommend />} allowedRoles={["ngo"]} /> } />
+
 
             {/* 🦸 Volunteer Routes */}
             <Route path="/volunteer-dashboard" element={<ProtectedRoute element={<VolunteerDashboard />} allowedRoles={["volunteer"]} />} />
@@ -67,14 +68,6 @@ function App() {
 
             {/* 🔄 Redirect Unknown Routes */}
             <Route path="*" element={<Navigate to="/" />} />
-
-            {/* 🧠 ML Route */}
-            <Route path="/ml" element={<Recommend />} />
-
-            
-
-
-
           </Routes>
         </div>
       </Router>

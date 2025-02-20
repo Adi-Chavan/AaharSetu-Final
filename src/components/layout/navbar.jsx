@@ -12,7 +12,7 @@ export function Navbar() {
   const logout = auth?.logout || (() => { }); // Default function if logout is missing
 
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-lg border-b">
+    <nav className="fixed top-0 left-0 w-full bg-white/10 backdrop-blur-lg shadow-md border-b border-white/20 z-[4000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -34,12 +34,8 @@ export function Navbar() {
             </>
 
 
-            {(!user || (user?.role !== "volunteer" && user?.role !== "ngo")) && (
+            {(!user || (user?.role !== "volunteer" && user?.role !== "ngo" && user?.role !== "donor")) && (
               <>
-                <Link to="/donor/dash" className={`text-neutral-700 hover:text-neutral-900 flex items-center ${location.pathname.startsWith("/donor") ? "font-medium" : ""}`}>
-                  <Package className="w-4 h-4 mr-2" />
-                  Donors
-                </Link>
                 <Link to="/ngo" className={`text-neutral-700 hover:text-neutral-900 flex items-center ${location.pathname.startsWith("/ngo") ? "font-medium" : ""}`}>
                   <Users2 className="w-4 h-4 mr-2" />
                   NGOs
@@ -62,6 +58,12 @@ export function Navbar() {
                 {user.role === "ngo" && (
                   <Link to="/ngo/register">
                     <Button variant="secondary">Register Your NGO</Button>
+                  </Link>
+                )}
+
+                {user.role === "donor" && (
+                  <Link to="/generate-certificate">
+                    <Button variant="secondary">Generate Your Certificate</Button>
                   </Link>
                 )}
 
