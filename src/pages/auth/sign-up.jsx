@@ -47,8 +47,9 @@ export function SignUp() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md mx-auto glass-card p-8 rounded-2xl"
+        className="max-w-md mx-auto glass-card p-8 rounded-2xl relative"
       >
+        <div className="gradient" />
         <h1 className="text-2xl font-bold mb-6">Create Account</h1>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
@@ -118,66 +119,3 @@ export function SignUp() {
 }
 
 
-
-
-
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { Button } from '@/components/ui/button';
-// import { motion } from 'framer-motion';
-
-// export function SignUp() {
-//   return (
-//     <div className="min-h-screen pt-20 px-4">
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         className="max-w-md mx-auto glass-card p-8 rounded-2xl"
-//       >
-//         <h1 className="text-2xl font-bold mb-6">Create Account</h1>
-//         <form className="space-y-4">
-//           <div>
-//             <label className="block text-sm font-medium mb-1">Full Name</label>
-//             <input
-//               type="text"
-//               className="w-full px-3 py-2 rounded-lg border bg-white/50"
-//               placeholder="Enter your full name"
-//             />
-//           </div>
-//           <div>
-//             <label className="block text-sm font-medium mb-1">Email</label>
-//             <input
-//               type="email"
-//               className="w-full px-3 py-2 rounded-lg border bg-white/50"
-//               placeholder="Enter your email"
-//             />
-//           </div>
-//           <div>
-//             <label className="block text-sm font-medium mb-1">Password</label>
-//             <input
-//               type="password"
-//               className="w-full px-3 py-2 rounded-lg border bg-white/50"
-//               placeholder="Create a password"
-//             />
-//           </div>
-//           <div>
-//             <label className="block text-sm font-medium mb-1">Account Type</label>
-//             <select className="w-full px-3 py-2 rounded-lg border bg-white/50">
-//               <option value="">Select account type</option>
-//               <option value="donor">Food Donor</option>
-//               <option value="ngo">NGO</option>
-//               <option value="volunteer">Volunteer</option>
-//             </select>
-//           </div>
-//           <Button className="w-full">Create Account</Button>
-//         </form>
-//         <p className="mt-4 text-center text-sm">
-//           Already have an account?{' '}
-//           <Link to="/sign-in" className="text-blue-600 hover:underline">
-//             Sign In
-//           </Link>
-//         </p>
-//       </motion.div>
-//     </div>
-//   );
-// }

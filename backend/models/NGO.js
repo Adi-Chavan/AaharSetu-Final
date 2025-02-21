@@ -22,22 +22,3 @@ const ngoSchema = new mongoose.Schema({
 const NGO = mongoose.model("NGO", ngoSchema);
 module.exports = NGO;
 
-
-
-
-// const mongoose = require("mongoose");
-
-// const ngoSchema = new mongoose.Schema({
-//   name: String,
-//   email: String,
-//   location: String,
-//   food_requested: [
-//     {
-//       food_id: Number,
-//       quantity_required: String,
-//       status: String
-//     }
-//   ]
-// });
-
-// module.exports = mongoose.model("NGO", ngoSchema);

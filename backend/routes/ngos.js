@@ -20,7 +20,7 @@ router.post("/register",isAuthenticated, hasRole(['ngo']), async (req, res) => {
   }
 });
 
-// ✅ 1️⃣ Fetch all pending donation requests for NGOs (Not Yet Approved)
+// Fetch all pending donation requests for NGOs (Not Yet Approved)
 router.get('/requests', isAuthenticated, hasRole(['ngo']), async (req, res) => {
   try {
     console.log("Fetching pending donation requests for NGO:", req.user._id);
@@ -35,12 +35,12 @@ router.get('/requests', isAuthenticated, hasRole(['ngo']), async (req, res) => {
   }
 });
 
-// ✅ 2️⃣ Fetch All Donations Approved by the Logged-in NGO
+// Fetch All Donations Approved by the Logged-in NGO
 router.get('/approved', isAuthenticated, hasRole(['ngo']), async (req, res) => {
   try {
     console.log("Authenticated NGO ID:", req.user._id);
 
-    const ngoId = new mongoose.Types.ObjectId(req.user._id); // ✅ Ensure ObjectId
+    const ngoId = new mongoose.Types.ObjectId(req.user._id); // Ensure ObjectId
     const approvedDonations = await Donation.find({ ngoId, ngoApproved: true });
 
     console.log("Approved Donations:", approvedDonations);
@@ -51,12 +51,12 @@ router.get('/approved', isAuthenticated, hasRole(['ngo']), async (req, res) => {
   }
 });
 
-// ✅ 3️⃣ Approve a Donation Request
+// Approve a Donation Request
 router.post('/requests/:id/accept', isAuthenticated, hasRole(['ngo']), async (req, res) => {
   try {
     const donationId = req.params.id;
 
-    // ✅ Approve the donation and assign the NGO ID
+    // Approve the donation and assign the NGO ID
     const updatedDonation = await Donation.findByIdAndUpdate(
       donationId,
       { ngoApproved: true, ngoId: req.user._id },
@@ -77,12 +77,12 @@ router.post("/request-donation", isAuthenticated, async (req, res) => {
   try {
     const { title, description, quantity, requiredBy } = req.body;
 
-    // ❌ Check if any field is missing
+    // Check if any field is missing
     if (!title || !description || !quantity || !requiredBy) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Save new request in MongoDB
+    //Save new request in MongoDB
     const newRequest = new DonationRequest({
       title,
       description,
@@ -94,12 +94,12 @@ router.post("/request-donation", isAuthenticated, async (req, res) => {
     await newRequest.save();
     res.status(201).json(newRequest);
   } catch (error) {
-    console.error("🚨 Error creating donation request:", error);
+    console.error("Error creating donation request:", error);
     res.status(500).json({ message: "Failed to submit request" });
   }
 });
 
-// ✅ Get all requested donations by NGOs
+// Get all requested donations by NGOs
 router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
   try {
     const requests = await DonationRequest.find({ ngoId: req.user._id });
@@ -113,21 +113,3 @@ router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) =
 module.exports = router;
 
 
-
-
-
-// const express = require("express");
-// const NGO = require("../models/NGO");
-// const router = express.Router();
-
-// // Get all NGOs
-// router.get("/", async (req, res) => {
-//   try {
-//     const ngos = await NGO.find();
-//     res.json(ngos);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// module.exports = router;

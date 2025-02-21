@@ -8,7 +8,7 @@ const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
 // Route to handle donation form submission
 router.post('/add', isAuthenticated, hasRole(['donor']), async (req, res) => {
   try {
-    const donation = new Donation({ ...req.body, donorId: req.user._id }); // ✅ Associate donation with donor
+    const donation = new Donation({ ...req.body, donorId: req.user._id }); //Associate donation with donor
     await donation.save();
     res.status(201).json({ message: 'Donation saved successfully!' });
   } catch (error) {
@@ -27,7 +27,7 @@ router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
     const donorId = new mongoose.Types.ObjectId(req.user._id); // Ensure ObjectId
     const donations = await Donation.find({ donorId });
 
-    // ✅ Add a correct status field
+    // Add a correct status field
     const formattedDonations = donations.map((donation) => ({
       ...donation._doc,
       status: donation.ngoApproved
@@ -39,7 +39,7 @@ router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
         : "pending",
     }));
 
-    console.log("Formatted Donations with Status:", formattedDonations); // ✅ Debugging
+    console.log("Formatted Donations with Status:", formattedDonations); //Debugging
 
     res.json(formattedDonations);
   } catch (error) {
@@ -48,15 +48,16 @@ router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   }
 });
 
-router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+router.post("/request-donation", isAuthenticated, async (req, res) => {
   try {
     const { title, description, quantity, requiredBy, dietaryRequirements } = req.body;
 
+    // Check if any field is missing
     if (!title || !description || !quantity || !requiredBy) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Create a new donation request
+    // Save new request in MongoDB
     const newRequest = new DonationRequest({
       title,
       description,
@@ -69,15 +70,16 @@ router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, 
     await newRequest.save();
     res.status(201).json(newRequest);
   } catch (error) {
-    console.error("🚨 Error creating donation request:", error);
+    console.error(" Error creating donation request:", error);
     res.status(500).json({ message: "Failed to submit request" });
   }
 });
 
-// ✅ 2️⃣ Fetch all donation requests made by the logged-in NGO
-router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+// Get all requested donations by NGOs
+router.get("/my-requests", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   try {
-    const requests = await DonationRequest.find({ ngoId: req.user._id });
+    // Fetch requests from the DonationRequest model
+    const requests = await DonationRequest.find();
     res.json(requests);
   } catch (error) {
     console.error("Error fetching NGO requests:", error);
@@ -85,48 +87,36 @@ router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) =
   }
 });
 
-// router.get('/', isAuthenticated, hasRole(['donor']), async (req, res) => {
-//   try {
-//     console.log("Authenticated User ID:", req.user._id);
+router.post("/requests/:id/accept", isAuthenticated, hasRole(["donor"]), async (req, res) => {
+  try {
+    const requestId = req.params.id;
 
-//     const donorId = new mongoose.Types.ObjectId(req.user._id); // ✅ Ensure ObjectId
-//     const donations = await Donation.find({ donorId });
+    // Find the donation request
+    const request = await DonationRequest.findById(requestId);
+    if (!request) return res.status(404).json({ error: "Request not found" });
 
-//     console.log("Donations found:", donations);
-//     res.json(donations);
-//   } catch (error) {
-//     console.error("Error fetching donations:", error);
-//     res.status(500).json({ error: "Failed to fetch donations" });
-//   }
-// });
+    // Convert the request into a donation
+    const newDonation = new Donation({
+      title: request.title,
+      description: request.description,
+      quantity: request.quantity,
+      pickupTime: request.requiredBy, // Assuming 'requiredBy' is the intended date
+      donorId: req.user._id, // Associate with the donor who accepted
+      ngoId: request.ngoId, // The NGO that requested
+      status: "pending", // Mark as pending until NGO approval
+    });
 
+    await newDonation.save();
 
-// const mongoose = require('mongoose');
+    // Remove the request after conversion to donation
+    await DonationRequest.findByIdAndDelete(requestId);
 
-// router.get('/', isAuthenticated, hasRole(['donor']), async (req, res) => {
-//   try {
-//     console.log("Authenticated User ID:", req.user._id, "Type:", typeof req.user._id);
-
-//     // Ensure donorId is a valid ObjectId
-//     let donorId;
-//     if (mongoose.isValidObjectId(req.user._id)) {
-//     donorId = new mongoose.Types.ObjectId(_id);
-//     } else {
-//       donorId = req.user._id;  // Use it as it is if already an ObjectId
-//     }
-
-//     console.log("Querying for donorId:", donorId);
-
-//     const donations = await Donation.find({ donorId });
-
-//     console.log("Donations found:", donations);
-
-//     res.json(donations);
-//   } catch (error) {
-//     console.error('Error fetching donations:', error);
-//     res.status(500).json({ error: 'Failed to fetch donations' });
-//   }
-// });
+    res.status(200).json({ message: "Request accepted and converted into a donation", donation: newDonation });
+  } catch (error) {
+    console.error("Error accepting NGO request:", error);
+    res.status(500).json({ error: "Failed to accept donation request" });
+  }
+});
 
 
 module.exports = router;

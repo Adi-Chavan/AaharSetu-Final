@@ -24,7 +24,7 @@ router.post("/recommend", async (req, res) => {
         res.json(response.data);
 
     } catch (error) {
-        console.error("❌ Error fetching recommendations:", error.response?.data || error.message);
+        console.error("Error fetching recommendations:", error.response?.data || error.message);
         res.status(500).json({ error: "Failed to fetch recommendations" });
     }
 });

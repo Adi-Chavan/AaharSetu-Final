@@ -32,26 +32,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login a user
-// router.post("/login", (req, res, next) => {
-//   passport.authenticate("local", async (err, user, info) => {
-//     if (err) return next(err);
-//     if (!user) {
-//       return res.status(400).json({ message: info?.message || "Invalid credentials" });
-//     }
-
-//     req.logIn(user, async (err) => {
-//       if (err) return next(err);
-
-//       const loggedInUser = await User.findById(user._id).select("-password");
-
-//       res.json({
-//         message: "Login successful",
-//         user: loggedInUser,
-//       });
-//     });
-//   })(req, res, next);
-// });
 
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", async (err, user, info) => {
@@ -63,7 +43,7 @@ router.post("/login", (req, res, next) => {
     req.logIn(user, async (err) => {
       if (err) return next(err);
 
-      req.session.save( async (err) => {  // ✅ Ensure session is saved
+      req.session.save( async (err) => {  //Ensure session is saved
         if (err) return next(err);
 
         const loggedInUser = await User.findById(user._id).select("-password");
@@ -94,7 +74,7 @@ router.post("/logout", (req, res, next) => {
     req.session.destroy((err) => {
       if (err) return next(err);
       
-      res.clearCookie("connect.sid", { path: "/" }); // ✅ Ensure session cookie is cleared
+      res.clearCookie("connect.sid", { path: "/" }); // Ensure session cookie is cleared
       return res.json({ message: "Logged out successfully" });
     });
   });
@@ -103,41 +83,3 @@ router.post("/logout", (req, res, next) => {
 
 module.exports = router;
 
-
-
-
-// const express = require('express');
-// const passport = require('passport');
-// const bcrypt = require('bcryptjs');
-// const User = require('../models/Donor');
-
-// const router = express.Router();
-
-// router.get('/login', (req, res) => res.render('login', { message: req.flash('error') }));
-// router.post('/login', passport.authenticate('local', {
-//     successRedirect: '/dashboard',
-//     failureRedirect: '/login',
-//     failureFlash: true
-// }));
-
-// router.get('/register', (req, res) => res.render('register'));
-// router.post('/register', async (req, res) => {
-//     const { name, email, password, role } = req.body;
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     await new User({ name, email, password: hashedPassword, role }).save();
-//     res.redirect('/login');
-// });
-
-// router.get('/dashboard', (req, res) => {
-//     if (!req.isAuthenticated()) return res.redirect('/login');
-//     res.render(`${req.user.role}-dashboard`, { user: req.user });
-// });
-
-// router.get('/logout', (req, res) => {
-//     req.logout((err) => {
-//         if (err) return next(err);
-//         res.redirect('/login');
-//     });
-// });
-
-// module.exports = router;
