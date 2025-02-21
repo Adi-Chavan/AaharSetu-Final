@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Donation = require('../models/Donation');
+const DonationRequest = require('../models/requestDonation');
 
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
 
@@ -14,6 +15,7 @@ router.post('/add', isAuthenticated, hasRole(['donor']), async (req, res) => {
     res.status(500).json({ error: 'Failed to save donation' });
   }
 });
+
 
 //Route to fetch all donations made by the logged-in donor
 const mongoose = require('mongoose');
@@ -46,6 +48,41 @@ router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   }
 });
 
+router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+  try {
+    const { title, description, quantity, requiredBy } = req.body;
+
+    if (!title || !description || !quantity || !requiredBy) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // ✅ Create a new donation request
+    const newRequest = new DonationRequest({
+      title,
+      description,
+      quantity,
+      requiredBy: new Date(requiredBy), // Convert to Date object
+      requestedBy: req.user._id, // Logged-in NGO
+    });
+
+    await newRequest.save();
+    res.status(201).json(newRequest);
+  } catch (error) {
+    console.error("🚨 Error creating donation request:", error);
+    res.status(500).json({ message: "Failed to submit request" });
+  }
+});
+
+// ✅ 2️⃣ Fetch all donation requests made by the logged-in NGO
+router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+  try {
+    const requests = await DonationRequest.find({ ngoId: req.user._id });
+    res.json(requests);
+  } catch (error) {
+    console.error("Error fetching NGO requests:", error);
+    res.status(500).json({ error: "Failed to fetch NGO requests" });
+  }
+});
 
 // router.get('/', isAuthenticated, hasRole(['donor']), async (req, res) => {
 //   try {
