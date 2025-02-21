@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/lib/store';
+// import { useStore } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 
@@ -29,7 +29,7 @@ const markerIcon = new L.Icon({
 
 export function NGORegister() {
   const navigate = useNavigate();
-  const addNGO = useStore((state) => state.addNGO);
+  // const addNGO = useStore((state) => state.addNGO);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: '',
@@ -132,6 +132,8 @@ export function NGORegister() {
       const response = await fetch('http://localhost:5000/api/ngos/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        credentials: 'include', // Ensures cookies are sent
         body: JSON.stringify(formData),
       });
       if (response.ok) {
@@ -147,8 +149,7 @@ export function NGORegister() {
 
   return (
     <div className="min-h-screen pt-20 px-4">
-      <div className="max-w-3xl mx-auto relative">
-      <div className="gradient" />
+      <div className="max-w-3xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl">
           <h1 className="text-2xl font-bold mb-6">NGO Registration</h1>
           {Object.keys(errors).length > 0 && (

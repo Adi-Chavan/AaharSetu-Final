@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 
 
 export function VolunteerRegister() {
   const navigate = useNavigate();
-  const addVolunteer = useStore((state) => state.addVolunteer);
   const [showSuccess, setShowSuccess] = React.useState(false);
-  const [errors, setErrors] = React.useState({});
-  const [formData, setFormData] = React.useState({
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
@@ -57,27 +55,41 @@ export function VolunteerRegister() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-
+  
     console.log('Form Data:', formData);
-
+  
     try {
-      addVolunteer({
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        availability: [formData.availability],
-        vehicle: formData.hasVehicle ? 'Yes' : 'No',
-        experience: formData.volunteeringTypes.join(', '),
-        areas: [formData.city]
+      const response = await fetch('http://localhost:5000/api/volunteers/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(formData),
       });
-
+  
+      if (!response.ok) {
+        throw new Error('Failed to submit registration.');
+      }
+  
+      const data = await response.json();
+      console.log('Success:', data);
+  
+      // addVolunteer({
+      //   name: formData.fullName,
+      //   email: formData.email,
+      //   phone: formData.phone,
+      //   availability: [formData.availability],
+      //   vehicle: formData.hasVehicle ? 'Yes' : 'No',
+      //   experience: formData.volunteeringTypes.join(', '),
+      //   areas: [formData.city]
+      // });
+  
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
@@ -88,6 +100,7 @@ export function VolunteerRegister() {
       setErrors({ submit: 'Failed to submit registration. Please try again.' });
     }
   };
+  
 
   const handleFileUpload = (e) => {
     const file = e.target.files && e.target.files[0];
@@ -112,9 +125,8 @@ export function VolunteerRegister() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8 rounded-2xl relative"
+          className="glass-card p-8 rounded-2xl"
         >
-          <div className='gradient'/>
           <h1 className="text-2xl font-bold mb-6">Volunteer Registration</h1>
 
           {Object.keys(errors).length > 0 && (

@@ -11,7 +11,7 @@ import { VolunteerRegister } from "./pages/volunteer/register";
 import { LiveMap } from "./pages/live-map";
 import { SignIn } from "./pages/auth/sign-in";
 import { SignUp } from "./pages/auth/sign-up";
-import { AdminPanel } from "./pages/admin/dashboard";     
+// import { AdminPanel } from "./pages/admin/dashboard";     
 import { Leaderboard } from "./pages/volunteer/leaderboard";
 import { NGORegister } from "./pages/ngo/register"
 import { Recommend } from "./pages/ml";
@@ -93,7 +93,7 @@ function App() {
             <Route path="/volunteer/leaderboard" element={<Leaderboard />} />
 
             {/* 🛠 Admin Routes */}
-            <Route path="/admin-dashboard" element={<ProtectedRoute element={<AdminPanel />} allowedRoles={["admin"]} />} />
+            {/* <Route path="/admin-dashboard" element={<ProtectedRoute element={<AdminPanel />} allowedRoles={["admin"]} />} /> */}
 
             {/* 🔄 Redirect Unknown Routes */}
             <Route path="*" element={<Navigate to="/" />} />

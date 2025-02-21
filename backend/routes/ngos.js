@@ -3,9 +3,22 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Donation = require('../models/Donation');
 const DonationRequest = require('../models/requestDonation');
+const NGO = require('../models/NGO');
 
 
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
+
+
+router.post("/register",isAuthenticated, hasRole(['ngo']), async (req, res) => {
+  try {
+    const ngo = new NGO(req.body);
+    await ngo.save();
+    res.status(201).json({ message: "NGO registered successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to register NGO" });
+  }
+});
 
 // ✅ 1️⃣ Fetch all pending donation requests for NGOs (Not Yet Approved)
 router.get('/requests', isAuthenticated, hasRole(['ngo']), async (req, res) => {
@@ -60,9 +73,9 @@ router.post('/requests/:id/accept', isAuthenticated, hasRole(['ngo']), async (re
   }
 });
 
-router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+router.post("/request-donation", isAuthenticated, async (req, res) => {
   try {
-    const { title, description, quantity, requiredBy, dietaryRequirements } = req.body;
+    const { title, description, quantity, requiredBy } = req.body;
 
     // ❌ Check if any field is missing
     if (!title || !description || !quantity || !requiredBy) {
@@ -74,9 +87,8 @@ router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, 
       title,
       description,
       quantity,
-      dietaryRequirements,
       requiredBy: new Date(requiredBy),  // Convert to Date object
-      NgoId: req.user._id,  // Logged-in NGO ID
+      ngoId: req.user._id,  // Logged-in NGO ID
     });
 
     await newRequest.save();
@@ -90,7 +102,7 @@ router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, 
 // ✅ Get all requested donations by NGOs
 router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
   try {
-    const requests = await DonationRequest.find({ requestedBy: req.user._id });
+    const requests = await DonationRequest.find({ ngoId: req.user._id });
     res.json(requests);
   } catch (error) {
     console.error("Error fetching NGO requests:", error);
@@ -99,3 +111,23 @@ router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) =
 });
 
 module.exports = router;
+
+
+
+
+
+// const express = require("express");
+// const NGO = require("../models/NGO");
+// const router = express.Router();
+
+// // Get all NGOs
+// router.get("/", async (req, res) => {
+//   try {
+//     const ngos = await NGO.find();
+//     res.json(ngos);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+// module.exports = router;

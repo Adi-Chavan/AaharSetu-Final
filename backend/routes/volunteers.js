@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Donation = require("../models/Donation");
+const Volunteer = require("../models/Volunteer");
 const { isAuthenticated, hasRole } = require("../middlewares/authMiddleware");
 
 // Get all volunteers
@@ -12,6 +13,21 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// Volunteer Registration Route
+router.post('/register', async (req, res) => {
+  try {
+    const newVolunteer = new Volunteer(req.body);
+    await newVolunteer.save();
+    res.status(201).json({ message: 'Volunteer registered successfully' });
+  } catch (error) {
+    console.error('Error saving volunteer:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+module.exports = router;
+
 
 // ✅ Route to fetch all NGO-approved donations
 router.get("/approved-donations", isAuthenticated, hasRole(["volunteer"]), async (req, res) => {

@@ -77,7 +77,7 @@ router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, 
 // ✅ 2️⃣ Fetch all donation requests made by the logged-in NGO
 router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
   try {
-    const requests = await DonationRequest.find({ requestedBy: req.user._id });
+    const requests = await DonationRequest.find({ ngoId: req.user._id });
     res.json(requests);
   } catch (error) {
     console.error("Error fetching NGO requests:", error);
