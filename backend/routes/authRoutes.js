@@ -33,6 +33,26 @@ router.post("/register", async (req, res) => {
 });
 
 // Login a user
+// router.post("/login", (req, res, next) => {
+//   passport.authenticate("local", async (err, user, info) => {
+//     if (err) return next(err);
+//     if (!user) {
+//       return res.status(400).json({ message: info?.message || "Invalid credentials" });
+//     }
+
+//     req.logIn(user, async (err) => {
+//       if (err) return next(err);
+
+//       const loggedInUser = await User.findById(user._id).select("-password");
+
+//       res.json({
+//         message: "Login successful",
+//         user: loggedInUser,
+//       });
+//     });
+//   })(req, res, next);
+// });
+
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", async (err, user, info) => {
     if (err) return next(err);
@@ -43,15 +63,19 @@ router.post("/login", (req, res, next) => {
     req.logIn(user, async (err) => {
       if (err) return next(err);
 
-      const loggedInUser = await User.findById(user._id).select("-password");
+      req.session.save( async (err) => {  // ✅ Ensure session is saved
+        if (err) return next(err);
 
-      res.json({
-        message: "Login successful",
-        user: loggedInUser,
+        const loggedInUser = await User.findById(user._id).select("-password");
+        res.json({
+          message: "Login successful",
+          user: loggedInUser,
+        });
       });
     });
   })(req, res, next);
 });
+
 
 // Check if user is logged in (for Navbar state)
 router.get("/me", (req, res) => {
@@ -63,18 +87,19 @@ router.get("/me", (req, res) => {
 });
 
 // Logout user
-router.post("/logout", (req, res) => {
+router.post("/logout", (req, res, next) => {
   req.logout((err) => {
-    if (err) return res.status(500).json({ message: "Error logging out" });
+    if (err) return next(err);
 
     req.session.destroy((err) => {
-      if (err) return res.status(500).json({ message: "Error clearing session" });
-
-      res.clearCookie("connect.sid"); // Clear session cookie
-      res.json({ message: "Logged out successfully" });
+      if (err) return next(err);
+      
+      res.clearCookie("connect.sid", { path: "/" }); // ✅ Ensure session cookie is cleared
+      return res.json({ message: "Logged out successfully" });
     });
   });
 });
+
 
 module.exports = router;
 

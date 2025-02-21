@@ -5,33 +5,6 @@ import { ArrowRight, Heart, Users, Utensils } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function HomePage() {
-  useEffect(() => {
-    const initLandbot = () => {
-      if (!window.myLandbot) {
-        const script = document.createElement("script");
-        script.type = "module";
-        script.async = true;
-        script.src = "https://cdn.landbot.io/landbot-3/landbot-3.0.0.mjs";
-
-        script.addEventListener("load", () => {
-          window.myLandbot = new window.Landbot.Livechat({
-            configUrl: "https://storage.googleapis.com/landbot.online/v3/H-2787110-EFXHOM3SAHZ14HLK/index.json",
-          });
-        });
-
-        document.body.appendChild(script);
-      }
-    };
-
-    window.addEventListener("mouseover", initLandbot, { once: true });
-    window.addEventListener("touchstart", initLandbot, { once: true });
-
-    return () => {
-      window.removeEventListener("mouseover", initLandbot);
-      window.removeEventListener("touchstart", initLandbot);
-    };
-  }, []);
-
   return (
     <div className="min-h-screen">
       <section className="relative pt-20 lg:pt-24">

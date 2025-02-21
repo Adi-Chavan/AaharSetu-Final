@@ -7,13 +7,74 @@ const donationSchema = new mongoose.Schema({
   expiryDate: String,
   pickupAddress: String,
   pickupTime: String,
-  photo: String, // Store as base64 or a file reference
+  photo: String, 
   donorName: String,
   donorPhone: String,
   latitude: Number,
   longitude: Number,
   foodType: String,
+  donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  ngoApproved: { type: Boolean, default: false },  // ✅ Approval status
+  ngoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // ✅ NGO who approved
+
+  // 🚀 NEW FIELDS TO TRACK DELIVERY STATUS
+  status: { 
+    type: String, 
+    enum: ["pending", "ngoApproved", "claimed", "completed"], 
+    default: "pending" 
+  },
+  claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // ✅ Volunteer ID
+  claimedAt: { type: Date, default: null } // ✅ Timestamp when claimed
 });
 
 const Donation = mongoose.model('Donation', donationSchema);
 module.exports = Donation;
+
+
+
+
+// const mongoose = require('mongoose');
+
+// const donationSchema = new mongoose.Schema({
+//   title: String,
+//   description: String,
+//   quantity: Number,
+//   expiryDate: String,
+//   pickupAddress: String,
+//   pickupTime: String,
+//   photo: String, 
+//   donorName: String,
+//   donorPhone: String,
+//   latitude: Number,
+//   longitude: Number,
+//   foodType: String,
+//   donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+//   ngoApproved: { type: Boolean, default: false },  // ✅ New field
+//   ngoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // ✅ Store NGO who accepts it
+// });
+
+// const Donation = mongoose.model('Donation', donationSchema);
+// module.exports = Donation;
+
+
+
+// const mongoose = require('mongoose');
+
+// const donationSchema = new mongoose.Schema({
+//   title: String,
+//   description: String,
+//   quantity: Number,
+//   expiryDate: String,
+//   pickupAddress: String,
+//   pickupTime: String,
+//   photo: String, // Store as base64 or a file reference
+//   donorName: String,
+//   donorPhone: String,
+//   latitude: Number,
+//   longitude: Number,
+//   foodType: String,
+//   donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+// });
+
+// const Donation = mongoose.model('Donation', donationSchema);
+// module.exports = Donation;
