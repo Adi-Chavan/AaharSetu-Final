@@ -3,9 +3,22 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Donation = require('../models/Donation');
 const DonationRequest = require('../models/requestDonation');
+const NGO = require('../models/NGO');
 
 
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
+
+
+router.post("/register",isAuthenticated, hasRole(['ngo']), async (req, res) => {
+  try {
+    const ngo = new NGO(req.body);
+    await ngo.save();
+    res.status(201).json({ message: "NGO registered successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to register NGO" });
+  }
+});
 
 // ✅ 1️⃣ Fetch all pending donation requests for NGOs (Not Yet Approved)
 router.get('/requests', isAuthenticated, hasRole(['ngo']), async (req, res) => {

@@ -29,7 +29,7 @@ const markerIcon = new L.Icon({
 
 export function NGORegister() {
   const navigate = useNavigate();
-  const addNGO = useStore((state) => state.addNGO);
+  // const addNGO = useStore((state) => state.addNGO);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: '',
@@ -132,6 +132,8 @@ export function NGORegister() {
       const response = await fetch('http://localhost:5000/api/ngos/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        credentials: 'include', // Ensures cookies are sent
         body: JSON.stringify(formData),
       });
       if (response.ok) {

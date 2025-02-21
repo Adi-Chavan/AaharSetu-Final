@@ -48,21 +48,22 @@ router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   }
 });
 
-router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+router.post("/request-donation", isAuthenticated, async (req, res) => {
   try {
     const { title, description, quantity, requiredBy } = req.body;
 
+    // ❌ Check if any field is missing
     if (!title || !description || !quantity || !requiredBy) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Create a new donation request
+    // ✅ Save new request in MongoDB
     const newRequest = new DonationRequest({
       title,
       description,
       quantity,
-      requiredBy: new Date(requiredBy), // Convert to Date object
-      requestedBy: req.user._id, // Logged-in NGO
+      requiredBy: new Date(requiredBy),  // Convert to Date object
+      ngoId: req.user._id,  // Logged-in NGO ID
     });
 
     await newRequest.save();
@@ -73,14 +74,46 @@ router.post("/request-donation", isAuthenticated, hasRole(["ngo"]), async (req, 
   }
 });
 
-// ✅ 2️⃣ Fetch all donation requests made by the logged-in NGO
-router.get("/my-requests", isAuthenticated, hasRole(["ngo"]), async (req, res) => {
+// ✅ Get all requested donations by NGOs
+router.get("/my-requests", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   try {
-    const requests = await DonationRequest.find({ ngoId: req.user._id });
+    // Fetch requests from the DonationRequest model
+    const requests = await DonationRequest.find();
     res.json(requests);
   } catch (error) {
     console.error("Error fetching NGO requests:", error);
     res.status(500).json({ error: "Failed to fetch NGO requests" });
+  }
+});
+
+router.post("/requests/:id/accept", isAuthenticated, hasRole(["donor"]), async (req, res) => {
+  try {
+    const requestId = req.params.id;
+
+    // 🔍 Find the donation request
+    const request = await DonationRequest.findById(requestId);
+    if (!request) return res.status(404).json({ error: "Request not found" });
+
+    // ✅ Convert the request into a donation
+    const newDonation = new Donation({
+      title: request.title,
+      description: request.description,
+      quantity: request.quantity,
+      pickupTime: request.requiredBy, // Assuming 'requiredBy' is the intended date
+      donorId: req.user._id, // Associate with the donor who accepted
+      ngoId: request.ngoId, // The NGO that requested
+      status: "pending", // Mark as pending until NGO approval
+    });
+
+    await newDonation.save();
+
+    // 🗑️ Remove the request after conversion to donation
+    await DonationRequest.findByIdAndDelete(requestId);
+
+    res.status(200).json({ message: "Request accepted and converted into a donation", donation: newDonation });
+  } catch (error) {
+    console.error("🚨 Error accepting NGO request:", error);
+    res.status(500).json({ error: "Failed to accept donation request" });
   }
 });
 
