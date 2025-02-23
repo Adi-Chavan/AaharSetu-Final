@@ -142,6 +142,12 @@ export function NgoDashboard() {
           </div>
 
           <div className='flex space-x-4'>
+            <Link to="/prediction">
+              <Button>
+                Surplus Prediction
+              </Button>
+            </Link>
+
             <Link to="/ml">
               <Button>
                 ML Recommendations

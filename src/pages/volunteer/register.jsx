@@ -125,8 +125,9 @@ export function VolunteerRegister() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8 rounded-2xl"
+          className="glass-card p-8 rounded-2xl relative"
         >
+          <div className='gradient'/>
           <h1 className="text-2xl font-bold mb-6">Volunteer Registration</h1>
 
           {Object.keys(errors).length > 0 && (

@@ -14,7 +14,12 @@ const VolunteerSchema = new mongoose.Schema({
   hasVehicle: { type: Boolean, required: true },
   foodPreference: { type: String, required: true },
   idProof: { type: String, required: true },
-  termsAccepted: { type: Boolean, required: true }
+  termsAccepted: { type: Boolean, required: true },
+  status: { 
+    type: String, 
+    enum: ["pending",'rejected','approved'], 
+    default: "pending" 
+  },
 }, { timestamps: true });
 
 const Volunteer = mongoose.model('Volunteer', VolunteerSchema);

@@ -19,6 +19,8 @@ const ngoRoutes = require("./routes/ngos");
 const volunteerRoutes = require("./routes/volunteers");
 const donationRoutes = require('./routes/donations');
 const recommendationRoutes = require('./routes/Recommend');
+const adminRoutes = require("./routes/admin");
+
 
 const app = express();
 
@@ -121,6 +123,7 @@ app.use("/api/ngos", isAuthenticated, hasRole(['ngo', 'admin']), ngoRoutes);
 app.use("/api/volunteers", isAuthenticated, hasRole(['volunteer', 'admin']), volunteerRoutes);
 app.use('/donations', isAuthenticated, hasRole(['donor']), donationRoutes);
 app.use('/', recommendationRoutes);
+app.use('/admin', adminRoutes);
 
 // ✅ FIX 5: API Check
 app.get("/", (req, res) => {

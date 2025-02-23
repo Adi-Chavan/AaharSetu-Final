@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
+
 
 const donationRequestSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -6,7 +8,7 @@ const donationRequestSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   requiredBy: { type: Date, required: true },
   dietaryRequirements: [{ type: String, required: true }],
-  ngoId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  ngoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
 }, { timestamps: true });
 

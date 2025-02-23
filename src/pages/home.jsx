@@ -29,6 +29,13 @@ export function HomePage() {
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
+
+              <Link to='/logistic'>
+                <Button size="lg" className="group">
+                  Become Our Logistic Partner
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Camera } from 'lucide-react';
+import { Camera, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const markerIcon = new L.Icon({
@@ -17,6 +17,14 @@ const markerIcon = new L.Icon({
 export function DonateForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showModal, setShowModal] = useState(true);
+  const [agreed, setAgreed] = useState(false);
+
+  const handleAgree = () => {
+    if (agreed) {
+      setShowModal(false);
+    }
+  };
 
   useEffect(() => {
     if (!user) {
@@ -45,14 +53,14 @@ export function DonateForm() {
   const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // Default to India
 
   // Fetch user's geolocation
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
-        (err) => console.warn('Geolocation error:', err.message)
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ('geolocation' in navigator) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
+  //       (err) => console.warn('Geolocation error:', err.message)
+  //     );
+  //   }
+  // }, []);
 
   function LocationMarker() {
     useMapEvents({
@@ -115,12 +123,14 @@ export function DonateForm() {
     }
   };
 
+
   if (!user || user.role !== 'donor') return null;
 
   return (
     <div className="min-h-screen pt-20 px-4">
     <div className="max-w-2xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl relative">
+        <div className='gradient' />
         <h1 className="text-2xl font-bold mb-6">List Food Donation</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -274,6 +284,118 @@ export function DonateForm() {
         </form>
       </motion.div>
     </div>
+
+    {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[101]">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800">🍽 Food Hygiene & Safety Guidelines</h2>
+              </div>
+
+              <div className="space-y-4 text-gray-700">
+                <section>
+                  <h3 className="font-semibold mb-2">✅ Donate Fresh & Edible Food</h3>
+                  <p>Ensure food is not expired, spoiled, or contaminated.</p>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold mb-2">✅ Proper Packaging</h3>
+                  <p>Use sealed containers, food-grade bags, or hygienic wraps to maintain freshness.</p>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold mb-2">✅ Labeling</h3>
+                  <p>Clearly mention food type, ingredients, preparation date, and expiry date.</p>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold mb-2">✅ Food Storage</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li><strong>Perishable Items:</strong> Keep refrigerated until pickup.</li>
+                    <li><strong>Dry & Packaged Foods:</strong> Must be unopened and within expiry.</li>
+                    <li><strong>Cooked Food:</strong> Only freshly prepared, hygienically stored food is accepted.</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold mb-2">✅ Avoid Cross-Contamination</h3>
+                  <p>Separate Vegetarian 🥦, Non-Vegetarian 🍗, and Dairy 🥛 products properly.</p>
+                </section>
+
+                <section>
+                  <h3 className="font-semibold mb-2">❌ Food We Do Not Accept</h3>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Expired or spoiled food</li>
+                    <li>Opened or partially used items</li>
+                    <li>Leftovers from personal plates</li>
+                    <li>Highly processed or unhealthy junk food</li>
+                  </ul>
+                </section>
+
+                <div className="border-t pt-4 mt-6">
+                  <p className="text-sm text-gray-600">📞 Need Assistance? Contact our team for donation guidelines.</p>
+                </div>
+
+                <div className="flex items-center gap-2 mt-6">
+                  <input
+                    type="checkbox"
+                    id="agreement"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
+                  />
+                  <label htmlFor="agreement" className="text-sm text-gray-700">
+                    I have read and agree to follow these guidelines
+                  </label>
+                </div>
+
+                <Button
+                  onClick={handleAgree}
+                  className={`w-full py-2 px-4 rounded-lg font-medium ${
+                    agreed
+                      ? ''
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  OK
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
   </div>
   );
 }
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+
+// function App() {
+  
+
+//   return (
+//     <div className="min-h-screen bg-gray-50">
+//       {/* Main Content */}
+//       <div className="container mx-auto px-4 py-8">
+//         <div className="flex items-center gap-3 mb-6">
+//           <ClipboardList className="w-8 h-8 text-green-600" />
+//           <h1 className="text-3xl font-bold text-gray-800">Food Donation Guidelines</h1>
+//         </div>
+//         <p className="text-gray-600 mb-4">Please review our food donation guidelines to ensure food safety and quality.</p>
+//       </div>
+
+//       {/* Modal */}
+      
+//     </div>
+//   );
+// }
+

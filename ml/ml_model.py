@@ -4,8 +4,17 @@ from flask_cors import CORS
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
 
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/recommend": {"origins": "*"}})  # Allow frontend requests
+
+# Configure CORS to allow requests from the frontend
+CORS(app, resources={
+    r"/recommend": {
+        "origins": "*",  
+        "methods": ["POST", "OPTIONS"],  # Allow POST and OPTIONS for preflight
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # MongoDB Connection
 client = MongoClient("mongodb://localhost:27017/")
@@ -29,7 +38,15 @@ def get_nearest_donations(latitude, longitude, foodType, quantity, n_neighbors=1
         for donation in donations:
             lat, lon = donation.get("latitude"), donation.get("longitude")
             if lat is not None and lon is not None:
-                donation["_id"] = str(donation["_id"])  # Convert ObjectId to string
+                # Convert all ObjectId fields to strings
+                donation["_id"] = str(donation["_id"])
+                if "donorId" in donation:
+                    donation["donorId"] = str(donation["donorId"])
+                if "ngoId" in donation:
+                    donation["ngoId"] = str(donation["ngoId"])
+                if "claimedBy" in donation:
+                    donation["claimedBy"] = str(donation["claimedBy"])
+                
                 donor_locations.append((lat, lon))
                 valid_donations.append(donation)
 
@@ -56,6 +73,12 @@ def get_nearest_donations(latitude, longitude, foodType, quantity, n_neighbors=1
     except Exception as e:
         return {"error": str(e)}
 
+# Handle OPTIONS requests for preflight
+@app.route("/recommend", methods=["OPTIONS"])
+def handle_options():
+    return jsonify({}), 200
+
+# Handle POST requests for recommendations
 @app.route("/recommend", methods=["POST"])
 def recommend_donations():
     try:
@@ -76,6 +99,6 @@ def recommend_donations():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Run the Flask app
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
-

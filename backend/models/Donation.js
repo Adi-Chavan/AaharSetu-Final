@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { v4: uuidv4 } = require("uuid");
+
 const donationSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -17,10 +19,11 @@ const donationSchema = new mongoose.Schema({
   ngoApproved: { type: Boolean, default: false },  //  Approval status
   ngoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, //  NGO who approved
 
+
   // NEW FIELDS TO TRACK DELIVERY STATUS
   status: { 
     type: String, 
-    enum: ["pending", "ngoApproved", "claimed", "completed"], 
+    enum: ["pending", "ngoApproved", "claimed", "completed",'rejected','approved'], 
     default: "pending" 
   },
   claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // Volunteer ID

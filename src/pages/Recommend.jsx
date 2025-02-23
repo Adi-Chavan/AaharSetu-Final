@@ -6,9 +6,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-
-
-
 // Fix for default marker icons in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -48,7 +45,9 @@ function MapCenter({ latitude, longitude }) {
 export function Recommend() {
   
   const [recommendations, setRecommendations] = useState([]);
+  const [donationRequests, setDonationRequests] = useState([]);
   const [selectedDonation, setSelectedDonation] = useState(null);
+  const [approvedDonations, setApprovedDonations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -144,6 +143,40 @@ export function Recommend() {
       return `${(distance * 1000).toFixed(0)}m`;
     }
     return `${distance.toFixed(1)}km`;
+  };
+  
+  const handleApproveDonation = async (donationId) => {
+    if (!donationId) {
+      console.error("Error: Invalid donation ID:", donationId);
+      alert("Error: Invalid donation ID.");
+      return;
+    }
+  
+    try {
+      console.log("Sending approval request for donation:", donationId);
+  
+      const response = await fetch(`http://localhost:5000/api/ngos/requests/${donationId}/accept`, {
+        method: "POST",
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log("Approved Donation Data:", data);
+  
+      // ✅ Move approved donation from pending to approved list
+      setDonationRequests((prevRequests) => prevRequests.filter(d => d._id !== donationId));
+      setApprovedDonations((prev) => [...prev, data.donation]);
+  
+      setSelectedDonation(null);
+      alert("Donation approved successfully!");
+    } catch (error) {
+      console.error("Error approving donation:", error);
+      alert("Failed to approve donation. Please try again.");
+    }
   };
 
   return (
@@ -419,8 +452,12 @@ export function Recommend() {
               </div>
 
               <div className="sticky bottom-0 bg-white pt-4 flex gap-3">
-                <Button
-                  onClick={() => handleApproveDonation(selectedDonation.id)}
+              <Button
+                  onClick={() => {
+                  console.log("Approving Donation ID:", selectedDonation?._id); // Debugging
+                  handleApproveDonation(selectedDonation?._id);
+                  
+                }}
                   className="flex-1"
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />

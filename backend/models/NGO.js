@@ -16,7 +16,12 @@ const ngoSchema = new mongoose.Schema({
   registrationCertificate: { type: String, required: true },
   fssaiCompliance: { type: String, required: true },
   pickupTiming: [{ type: String }],
-  termsAccepted: { type: Boolean, required: true }
+  termsAccepted: { type: Boolean, required: true },
+  status: { 
+    type: String, 
+    enum: ["pending",'rejected','approved'], 
+    default: "pending" 
+  },
 });
 
 const NGO = mongoose.model("NGO", ngoSchema);

@@ -142,7 +142,7 @@ export function VolunteerDashboard() {
               <p>Loading...</p>
             ) : approvedDonations.length > 0 ? (
               <div className="space-y-4">
-                {approvedDonations.map((donation) => (
+                {[...approvedDonations].reverse().map((donation) => (
                   <div key={donation._id} className="bg-white/50 p-4 rounded-lg">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-medium">{donation.title}</h3>
@@ -177,7 +177,7 @@ export function VolunteerDashboard() {
 
               {activeDeliveries.length > 0 ? (
                   <div className="space-y-4">
-                      {activeDeliveries.map((donation) => (
+                      {[...activeDeliveries].reverse().map((donation) => (
                           <div key={donation._id} className="bg-white/50 p-4 rounded-lg">
                               <h3 className="font-medium">{donation.title}</h3>
                               <p className="text-sm text-neutral-600">{donation.quantity} servings</p>

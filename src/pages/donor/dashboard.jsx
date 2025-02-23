@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Plus, Package, Clock, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import WhatsAppChat from '@/components/layout/WhatsApp';
 
 export function DonorDashboard() {
   const [donations, setDonations] = useState([]); // Store donations
@@ -13,6 +14,8 @@ export function DonorDashboard() {
   const [customAmount, setCustomAmount] = useState("");
   const [error, setError] = useState("");
 
+
+  //Dnation Money
   const handleSelectAmount = (amount) => {
     setSelectedAmount(amount);
     setCustomAmount("");
@@ -223,7 +226,7 @@ export function DonorDashboard() {
                 {[{ amount: 750 }, { amount: 1500 }, { amount: 3000 }, { amount: 5000 }].map((option) => (
                   <button
                     key={option.amount}
-                    className={`p-3 border rounded-lg ${selectedAmount === option.amount ? "bg-blue-500 text-white" : "bg-gray-100"}`}
+                    className={`p-3 border rounded-lg ${selectedAmount === option.amount ? "bg-black text-white" : "bg-gray-100"}`}
                     onClick={() => handleSelectAmount(option.amount)}
                   >
                     <div>₹ {option.amount}</div>
@@ -231,7 +234,7 @@ export function DonorDashboard() {
                 ))}
                 <div className="col-span-2 flex flex-col items-center">
                   <button
-                    className={`p-3 border rounded-lg w-full ${selectedAmount === "custom" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
+                    className={`p-3 border rounded-lg w-full ${selectedAmount === "custom" ? "bg-black text-white" : "bg-gray-100"}`}
                     onClick={() => handleSelectAmount("custom")}
                   >
                     Custom
@@ -252,10 +255,10 @@ export function DonorDashboard() {
                 </div>
               </div>
               <p className="text-sm text-gray-500 mt-4">
-                To address malnutrition in India, we would need to serve 250 nutritious meals to each child every academic year.
+                Help us connect surplus food with those in need. Your generosity makes a significant impact in reducing hunger and food waste.
               </p>
               <button
-                className="mt-4 p-3 bg-blue-500 text-white w-full rounded-lg disabled:bg-gray-300"
+                className="mt-4 p-3 bg-black text-white w-full rounded-lg disabled:bg-gray-300"
                 disabled={!selectedAmount && !customAmount}
                 onClick={() => { setOpenMoney(false) }}
               >
@@ -265,6 +268,7 @@ export function DonorDashboard() {
           </div>
         )}
       </div>
+      <WhatsAppChat />
     </div>
   );
 }

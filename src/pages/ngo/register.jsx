@@ -106,7 +106,6 @@ export function NGORegister() {
       const response = await fetch('http://localhost:5000/api/ngos/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
         credentials: 'include', // Ensures cookies are sent
         body: JSON.stringify(formData),
       });
@@ -124,7 +123,8 @@ export function NGORegister() {
   return (
     <div className="min-h-screen pt-20 px-4">
       <div className="max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 rounded-2xl relative">
+          <div className='gradient'/>
           <h1 className="text-2xl font-bold mb-6">NGO Registration</h1>
           {Object.keys(errors).length > 0 && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
