@@ -39,7 +39,7 @@ process.on('SIGINT', async () => {
 });
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"], // Add frontend URLs
+    origin: ["http://localhost:5173", "http://localhost:5174","https://aharsetu-recursia.netlify.app"], // Add frontend URLs
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"], // Allow necessary methods
     allowedHeaders: ["Content-Type", "Authorization"] // Ensure proper headers
@@ -49,7 +49,7 @@ app.use(cors({
 // ✅ FIX 2: Middleware Fixes
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: '50mb' }));
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174","https://aharsetu-recursia.netlify.app"], credentials: true }));
 
 app.use(session({ 
     secret: process.env.SESSION_SECRET || 'defaultSecret', 
@@ -99,15 +99,6 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-// passport.serializeUser((user, done) => done(null, user.id));
-// passport.deserializeUser(async (id, done) => {
-//     try {
-//         const user = await User.findById(id);
-//         done(null, user);
-//     } catch (error) {
-//         done(error);
-//     }
-// });
 
 app.use((req, res, next) => {
     console.log("Session Data:", req.session); // ✅ Log session data
