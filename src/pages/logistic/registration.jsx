@@ -351,7 +351,7 @@ export function LogisticRegister() {
                         </div>
 
                         <Button type="submit" className="w-full">
-                            Register as Volunteer
+                            Submit
                         </Button>
                     </form>
                 </motion.div>
