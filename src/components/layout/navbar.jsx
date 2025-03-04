@@ -19,7 +19,7 @@ export function Navbar() {
   // Logout function to clear session and update UI
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/logout", {
+      const res = await fetch("https://aaharsetufinal.onrender.com/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
