@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { MapPin, Trophy, Clock, CheckCircle2, Truck, X } from 'lucide-react';
 import WhatsAppChat from '@/components/layout/WhatsApp';
+import config from '../../config/env.js';
 
 
 
@@ -17,7 +18,7 @@ export function VolunteerDashboard() {
   useEffect(() => {
     const fetchApprovedDonations = async () => {
         try {
-            const response = await fetch("https://aaharsetufinal.onrender.com/api/volunteers/approved-donations", {
+            const response = await fetch(`${config.API_BASE_URL}/volunteers/approved-donations`, {
                 credentials: "include",
             });
 
@@ -42,7 +43,7 @@ export function VolunteerDashboard() {
   useEffect(() => {
     const fetchActiveDeliveries = async () => {
         try {
-            const response = await fetch("https://aaharsetufinal.onrender.com/api/volunteers/active-deliveries", {
+            const response = await fetch(`${config.API_BASE_URL}/volunteers/active-deliveries`, {
                 credentials: "include",
             });
 
@@ -63,7 +64,7 @@ export function VolunteerDashboard() {
   // ✅ Handle accepting a delivery
   const handleAcceptDelivery = async (donationId) => {
     try {
-        const response = await fetch(`https://aaharsetufinal.onrender.com/api/volunteers/claim/${donationId}`, {
+        const response = await fetch(`${config.API_BASE_URL}/volunteers/claim/${donationId}`, {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -96,7 +97,7 @@ export function VolunteerDashboard() {
   // ✅ Handle marking a delivery as completed
   const handleCompleteDelivery = async (donationId) => {
     try {
-      const response = await fetch(`https://aaharsetufinal.onrender.com/api/volunteers/complete/${donationId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/volunteers/complete/${donationId}`, {
         method: "POST",
         credentials: "include",
       });

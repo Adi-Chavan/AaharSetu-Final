@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { loginUser } from "../../api"; 
-import { useAuth } from "../../context/AuthContext"; 
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { loginUser } from '../../api';
+import { useAuth } from '../../context/AuthContext';
+import config from '../../config/env.js'; 
 
 export function SignIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -29,14 +30,16 @@ export function SignIn() {
       }
   
       // Fetch the latest session data to ensure the role is correct
-      const sessionResponse = await fetch("https://aaharsetufinal.onrender.com/api/auth/me", { credentials: "include" });
+      const sessionResponse = await fetch(`${config.API_BASE_URL}/auth/me`, { 
+        credentials: 'include' 
+      });
       const sessionData = await sessionResponse.json();
-  
+
       if (!sessionData.user) {
-        setError("Failed to verify session. Please try again.");
+        setError('Failed to verify session. Please try again.');
         return;
       }
-  
+
       login(sessionData.user); // Update global auth state with verified backend data
   
       // Redirect based on the verified role from backend

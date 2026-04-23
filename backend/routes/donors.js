@@ -1,7 +1,11 @@
 const express = require("express");
-const Donor = require("../models/User");
-const Donation = require('../models/Donation');
+
 const router = express.Router();
+
+const Donor = require("../models/Donor");
+const Donation = require('../models/Donation');
+
+const donorController = require("../controllers/donorController");
 
 // Get all donors
 router.get("/", async (req, res) => {

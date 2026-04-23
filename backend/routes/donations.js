@@ -1,24 +1,28 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const router = express.Router();
+
+const donationController = require('../controllers/donationController');
 const Donation = require('../models/Donation');
 const DonationRequest = require('../models/requestDonation');
 
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
 
 // Route to handle donation form submission
-router.post('/add', isAuthenticated, hasRole(['donor']), async (req, res) => {
-  try {
-    const donation = new Donation({ ...req.body, donorId: req.user._id }); //Associate donation with donor
-    await donation.save();
-    res.status(201).json({ message: 'Donation saved successfully!' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to save donation' });
-  }
-});
+router.post('/add', isAuthenticated, hasRole(['donor']), donationController.addDonation);
 
+// Route to fetch all donations made by the logged-in donor
+router.get('/', isAuthenticated, hasRole(['donor']), donationController.getDonorDonations);
 
-//Route to fetch all donations made by the logged-in donor
-const mongoose = require('mongoose');
+// Create a donation request
+router.post('/request-donation', isAuthenticated, donationController.requestDonation);
+
+// Get all requested donations by NGOs
+router.get('/my-requests', isAuthenticated, hasRole(['donor']), donationController.getMyRequests);
+
+// Accept a donation request
+router.post('/requests/:id/accept', isAuthenticated, hasRole(['donor']), donationController.acceptRequest);
 
 router.get("/", isAuthenticated, hasRole(["donor"]), async (req, res) => {
   try {
@@ -117,6 +121,5 @@ router.post("/requests/:id/accept", isAuthenticated, hasRole(["donor"]), async (
     res.status(500).json({ error: "Failed to accept donation request" });
   }
 });
-
 
 module.exports = router;

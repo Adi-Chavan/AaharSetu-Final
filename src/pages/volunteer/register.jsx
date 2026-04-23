@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
+import config from '../../config/env.js';
 
 
 export function VolunteerRegister() {
@@ -66,7 +67,7 @@ export function VolunteerRegister() {
     console.log('Form Data:', formData);
   
     try {
-      const response = await fetch('https://aaharsetufinal.onrender.com/api/volunteers/register', {
+      const response = await fetch(`${config.API_BASE_URL}/volunteers/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

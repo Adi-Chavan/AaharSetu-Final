@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Plus, Package, Clock, Users2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Plus, Package, Clock, Users2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import WhatsAppChat from '@/components/layout/WhatsApp';
+import config from '../../config/env.js';
 
 export function DonorDashboard() {
   const [donations, setDonations] = useState([]); // Store donations
@@ -35,8 +36,8 @@ export function DonorDashboard() {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const response = await fetch("https://aaharsetufinal.onrender.com/donations", {
-          credentials: "include", // Ensure authentication if using sessions
+        const response = await fetch(`${config.BACKEND_URL}/donations`, {
+          credentials: 'include', // Ensure authentication if using sessions
         });
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
@@ -57,8 +58,8 @@ export function DonorDashboard() {
   useEffect(() => {
     const fetchNgoRequests = async () => {
       try {
-        const response = await fetch("https://aaharsetufinal.onrender.com/donations/my-requests", {
-          credentials: "include",
+        const response = await fetch(`${config.BACKEND_URL}/donations/my-requests`, {
+          credentials: 'include',
         });
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
@@ -76,9 +77,9 @@ export function DonorDashboard() {
   // Handle accepting an NGO request
   const handleAcceptRequest = async (requestId) => {
     try {
-      const response = await fetch(`https://aaharsetufinal.onrender.com/donations/requests/${requestId}/accept`, {
-        method: "POST",
-        credentials: "include",
+      const response = await fetch(`${config.BACKEND_URL}/donations/requests/${requestId}/accept`, {
+        method: 'POST',
+        credentials: 'include',
       });
 
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);

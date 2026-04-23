@@ -1,8 +1,9 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Map, Package, Users2, Heart, LogOut, Trophy } from "lucide-react";
-import { useAuth } from "@/context/AuthContext"; 
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Menu, X, Map, Package, Users2, Heart, LogOut, Trophy } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import config from '../../config/env.js'; 
 
 
 export function Navbar() {
@@ -19,14 +20,14 @@ export function Navbar() {
   // Logout function to clear session and update UI
   const handleLogout = async () => {
     try {
-      const res = await fetch("https://aaharsetufinal.onrender.com/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
+      const res = await fetch(`${config.API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
       });
 
       if (res.ok) {
         setUser(null); // Update UI after logout
-        window.location.href = "/sign-in"; // Redirect to login
+        window.location.href = '/sign-in'; // Redirect to login
       }
     } catch (error) {
       console.error("Logout error:", error);

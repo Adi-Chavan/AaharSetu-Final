@@ -3,13 +3,13 @@ from flask_cors import CORS
 import pdfkit
 from jinja2 import Environment, FileSystemLoader
 import os
-import io  # Import BytesIO for in-memory file handling
+import io
 
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), "templates"))
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 CORS(app)
 
 # Configure the path to wkhtmltopdf
-WKHTMLTOPDF_PATH = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe' 
+WKHTMLTOPDF_PATH = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
 config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -17,14 +17,15 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 
 @app.route('/generate', methods=['POST'])
 def generate_certificate():
+    """Generate a PDF certificate for the given recipient name."""
     if not request.is_json:
-        return jsonify({"error": "Request must be JSON"}), 400
+        return jsonify({'error': 'Request must be JSON'}), 400
 
     data = request.get_json()
     recipient_name = data.get('name')
 
     if not recipient_name:
-        return jsonify({"error": "Missing 'name' in request"}), 400
+        return jsonify({'error': "Missing 'name' in request"}), 400
 
     try:
         # Render HTML template
@@ -32,7 +33,7 @@ def generate_certificate():
         template = env.get_template('certificate_template.html')
         rendered_html = template.render(recipient_name=recipient_name)
 
-        # Generate PDF directly from HTML content (no temporary files)
+        # Generate PDF directly from HTML content
         pdf_bytes = pdfkit.from_string(rendered_html, False, configuration=config)
 
         # Create in-memory bytes buffer for the PDF
@@ -47,8 +48,12 @@ def generate_certificate():
         )
 
     except Exception as e:
-        app.logger.error(f"Error generating certificate: {str(e)}")
-        return jsonify({"error": "Failed to generate certificate", "details": str(e)}), 500
+        app.logger.error(f'Error generating certificate: {str(e)}')
+        return jsonify({
+            'error': 'Failed to generate certificate',
+            'details': str(e)
+        }), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002)

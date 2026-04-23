@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Camera, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import config from '../../config/env.js';
 
 const markerIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -103,7 +104,7 @@ export function DonateForm() {
     }
 
     try {
-      const response = await fetch('https://aaharsetufinal.onrender.com/donations/add', {
+      const response = await fetch(`${config.BACKEND_URL}/donations/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

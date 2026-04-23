@@ -1,8 +1,22 @@
 const express = require("express");
+
 const router = express.Router();
+
+const { isAuthenticated, hasRole } = require("../middlewares/authMiddleware");
 const Donation = require("../models/Donation");
 const Volunteer = require("../models/Volunteer");
-const { isAuthenticated, hasRole } = require("../middlewares/authMiddleware");
+
+// Register as volunteer
+router.post("/register", isAuthenticated, async (req, res) => {
+  try {
+    const newVolunteer = new Volunteer(req.body);
+    await newVolunteer.save();
+    res.status(201).json({ message: "Volunteer registered successfully", volunteer: newVolunteer });
+  } catch (error) {
+    console.error("Error saving volunteer:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // Get all volunteers
 router.get("/", async (req, res) => {
@@ -14,92 +28,67 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Volunteer Registration Route
-router.post('/register', async (req, res) => {
-  try {
-    const newVolunteer = new Volunteer(req.body);
-    await newVolunteer.save();
-    res.status(201).json({ message: 'Volunteer registered successfully' });
-  } catch (error) {
-    console.error('Error saving volunteer:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-module.exports = router;
-
-
-// Route to fetch all NGO-approved donations
+// Get approved donations
 router.get("/approved-donations", isAuthenticated, hasRole(["volunteer"]), async (req, res) => {
   try {
-      console.log("Fetching approved donations for volunteers...");
+    const volunteerId = req.user._id;
 
-      const volunteerId = req.user._id; // Get logged-in volunteer ID
+    const availableDonations = await Donation.find({ ngoApproved: true, claimedBy: null }).sort({ createdAt: -1 });
+    const activeDeliveries = await Donation.find({ claimedBy: volunteerId, status: "claimed" }).sort({ createdAt: -1 });
 
-      // Fetch Available Pickups (Unclaimed Donations)
-      const availableDonations = await Donation.find({ ngoApproved: true, claimedBy: null }).sort({ createdAt: -1 });
-
-      // Fetch Active Deliveries (Claimed by this Volunteer)
-      const activeDeliveries = await Donation.find({ claimedBy: volunteerId, status: "claimed" }).sort({ createdAt: -1 });
-
-      console.log("Available Donations:", availableDonations);
-      console.log("Active Deliveries:", activeDeliveries);
-
-      res.json({ availableDonations, activeDeliveries });
+    res.json({ availableDonations, activeDeliveries });
   } catch (error) {
-      console.error("Error fetching approved donations:", error);
-      res.status(500).json({ error: "Failed to fetch approved donations" });
+    console.error("Error fetching approved donations:", error);
+    res.status(500).json({ error: "Failed to fetch approved donations" });
   }
 });
 
-
+// Claim a donation
 router.post("/claim/:donationId", isAuthenticated, hasRole(["volunteer"]), async (req, res) => {
   try {
-      const { donationId } = req.params;
-      const volunteerId = req.user._id; // Get logged-in volunteer ID
+    const { donationId } = req.params;
+    const volunteerId = req.user._id;
 
-      const donation = await Donation.findById(donationId);
-      if (!donation) return res.status(404).json({ error: "Donation not found" });
+    const donation = await Donation.findById(donationId);
+    if (!donation) return res.status(404).json({ error: "Donation not found" });
 
-      // ✅ Update donation as claimed
-      donation.claimedBy = volunteerId;
-      donation.status = "claimed";
-      await donation.save();
+    donation.claimedBy = volunteerId;
+    donation.status = "claimed";
+    donation.claimedAt = new Date();
+    await donation.save();
 
-      res.json({ message: "Donation claimed successfully", donation });
+    res.json({ message: "Donation claimed successfully", donation });
   } catch (error) {
-      console.error("Error claiming donation:", error);
-      res.status(500).json({ error: "Failed to claim donation" });
+    console.error("Error claiming donation:", error);
+    res.status(500).json({ error: "Failed to claim donation" });
   }
 });
 
-
+// Get active deliveries
 router.get("/active-deliveries", isAuthenticated, hasRole(["volunteer"]), async (req, res) => {
   try {
-      console.log("Fetching active deliveries for volunteer:", req.user._id);
+    const activeDeliveries = await Donation.find({
+      claimedBy: req.user._id,
+      status: "claimed",
+    }).sort({ claimedAt: -1 });
 
-      const activeDeliveries = await Donation.find({
-          claimedBy: req.user._id, // Only fetch deliveries claimed by this volunteer
-          status: "claimed",
-      }).sort({ claimedAt: -1 });
-
-      console.log("Active Deliveries Found:", activeDeliveries);
-      res.json(activeDeliveries);
+    res.json(activeDeliveries);
   } catch (error) {
-      console.error("Error fetching active deliveries:", error);
-      res.status(500).json({ error: "Failed to fetch active deliveries" });
+    console.error("Error fetching active deliveries:", error);
+    res.status(500).json({ error: "Failed to fetch active deliveries" });
   }
 });
 
+// Complete delivery
 router.post("/complete/:donationId", isAuthenticated, hasRole(["volunteer"]), async (req, res) => {
   try {
     const { donationId } = req.params;
-    const volunteerId = req.user._id; // Get the logged-in volunteer's ID
+    const volunteerId = req.user._id;
 
     const donation = await Donation.findById(donationId);
     if (!donation) return res.status(404).json({ message: "Donation not found" });
 
-    if (donation.claimedBy.toString() !== volunteerId.toString()) {
+    if (!donation.claimedBy || donation.claimedBy.toString() !== volunteerId.toString()) {
       return res.status(403).json({ message: "You are not assigned to this donation" });
     }
 
@@ -107,7 +96,7 @@ router.post("/complete/:donationId", isAuthenticated, hasRole(["volunteer"]), as
       return res.status(400).json({ message: "This delivery has already been completed" });
     }
 
-    donation.status = "completed"; // Mark as completed
+    donation.status = "completed";
     await donation.save();
 
     res.json({ message: "Delivery completed successfully", donation });
@@ -116,8 +105,6 @@ router.post("/complete/:donationId", isAuthenticated, hasRole(["volunteer"]), as
     res.status(500).json({ error: "Failed to complete delivery" });
   }
 });
-
-
 
 module.exports = router;
 

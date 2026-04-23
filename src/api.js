@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://aaharsetufinal.onrender.com/api";
+import config from './config/env.js';
+
+const API_BASE_URL = config.API_BASE_URL;
 
 export const loginUser = async (credentials) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {

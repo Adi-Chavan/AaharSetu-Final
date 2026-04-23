@@ -1,15 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react';
+import config from '../config/env.js';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Ensure UI doesn't flicker on refresh
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch user session on app load
+  // Fetch user session on app load
   const fetchUser = async () => {
     try {
-      const res = await fetch("https://aaharsetufinal.onrender.com/api/auth/me", { credentials: "include" });
+      const res = await fetch(`${config.API_BASE_URL}/auth/me`, {
+        credentials: 'include'
+      });
       const data = await res.json();
 
       if (res.ok) {
@@ -18,31 +21,31 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      console.error("Error fetching user session:", error);
+      console.error('Error fetching user session:', error);
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Define login function to update state
+  // Define login function to update state
   const login = (userData) => {
     setUser(userData);
   };
 
-  // ✅ Define logout function to clear session
+  // Define logout function to clear session
   const logout = async () => {
     try {
-      const res = await fetch("https://aaharsetufinal.onrender.com/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
+      const res = await fetch(`${config.API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
       });
 
       if (res.ok) {
         setUser(null);
       }
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     }
   };
 

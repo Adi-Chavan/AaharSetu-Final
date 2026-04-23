@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
+import config from '../../config/env.js';
 
 const markerIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -103,7 +104,7 @@ export function NGORegister() {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      const response = await fetch('https://aaharsetufinal.onrender.com/api/ngos/register', {
+      const response = await fetch(`${config.API_BASE_URL}/ngos/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // Ensures cookies are sent

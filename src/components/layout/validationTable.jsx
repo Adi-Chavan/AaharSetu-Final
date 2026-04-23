@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Check, X, Eye,CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
+import config from '../../config/env.js';
 
 
 export function ValidationTable({ type, searchTerm}) {
@@ -17,7 +18,7 @@ export function ValidationTable({ type, searchTerm}) {
     useEffect(() => {
         const fetchNgoForm = async () => {
             try {
-                const response = await fetch("https://aaharsetufinal.onrender.com/admin/ngo", {
+                const response = await fetch(`${config.BACKEND_URL}/admin/ngo`, {
                     credentials: "include", // Ensure authentication if using sessions
                 });
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -40,7 +41,7 @@ export function ValidationTable({ type, searchTerm}) {
     useEffect(() => {
         const fetchDonationForm = async () => {
             try {
-                const response = await fetch("https://aaharsetufinal.onrender.com/admin/donation", {
+                const response = await fetch(`${config.BACKEND_URL}/admin/donation`, {
                     credentials: "include", // Ensure authentication if using sessions
                 });
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -66,7 +67,7 @@ export function ValidationTable({ type, searchTerm}) {
     useEffect(() => {
         const fetchVolunteerForm = async () => {
             try {
-                const response = await fetch("https://aaharsetufinal.onrender.com/admin/volunteer", {
+                const response = await fetch(`${config.BACKEND_URL}/admin/volunteer`, {
                     credentials: "include", // Ensure authentication if using sessions
                 });
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -103,7 +104,7 @@ export function ValidationTable({ type, searchTerm}) {
 
     const handleApprove = async (id) => {
         try {
-            const response = await fetch(`https://aaharsetufinal.onrender.com/admin/donation/${id}/approve`, {
+            const response = await fetch(`${config.BACKEND_URL}/admin/donation/${id}/approve`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -132,7 +133,7 @@ export function ValidationTable({ type, searchTerm}) {
     
     const handleReject = async (id) => {
         try {
-            const response = await fetch(`https://aaharsetufinal.onrender.com/admin/donation/${id}/reject`, {
+            const response = await fetch(`${config.BACKEND_URL}/admin/donation/${id}/reject`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
